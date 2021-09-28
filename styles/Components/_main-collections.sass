@@ -1,0 +1,31 @@
+.main-collections .image-container
+    position: relative
+
+    & img
+      max-width: 100%
+
+    & .image-title
+      display: flex
+      justify-content: center
+      align-items: center
+      position: absolute
+      left: 0
+      top: 0
+      height: 100%
+      width: 100%
+      background: #00000094
+      transition: all 0.3s
+
+      &:hover
+        background: #000000c0
+        cursor: pointer
+
+      & a
+        color: #fff
+        font-size: 2.3rem
+        font-weight: 600
+        text-decoration: none
+
+        &:hover
+          font-size: 2.5rem
+          transition: all 0.1s

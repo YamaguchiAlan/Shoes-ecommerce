@@ -1,0 +1,33 @@
+[
+    {
+        "img": "men-shoes-1.jpg",
+        "name": "AL50 Slate/White",
+        "price": 65
+    },
+    {
+        "img": "men-shoes-2.jpg",
+        "name": "Men's Pure Shoes",
+        "price": 65
+    },
+    {
+        "img": "men-shoes-3.jpg",
+        "name": "Men's Pure Shoes",
+        "price": 115
+    },
+    {
+        "img": "men-shoes-4.jpg",
+        "name": "Men's Pure Shoes",
+        "price": 100
+    },
+    {
+        "img": "men-shoes-5.jpg",
+        "name": "Men's Pure Shoes",
+        "price": 50,
+        "discountPrice": 35.99
+    },
+    {
+        "img": "men-shoes-6.jpg",
+        "name": "Men's Pure Shoes",
+        "price": 65
+    }
+]
