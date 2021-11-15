@@ -2,10 +2,13 @@ export type InputChangeEventHandler = React.ChangeEvent<HTMLInputElement>
 export type FormEventHandler = React.FormEvent<HTMLFormElement>
 
 export interface IProduct {
-    image: IImage,
+    productId: string,
+    image: IImage | string,
     name: string,
-    price: number,
-    discount?: number,
+    description: string,
+    priceId: string,
+    unitAmount: number,
+    currency: string,
     category: 'men' | 'women' | 'kid',
     _id?: string
 }

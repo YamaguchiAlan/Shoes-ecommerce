@@ -26,7 +26,7 @@ const Product: React.FC<Props> = ({product}) => {
     return (
         <Card >
             <CardMedia
-                image={product.image.file}
+                image={`http://localhost:3000/api/product/image/${product.image}`}
                 className={classes.image}
             />
             <CardContent>
@@ -34,7 +34,7 @@ const Product: React.FC<Props> = ({product}) => {
                     {product.name}
                 </Typography>
                 <Typography variant="h6" color="textSecondary" component="span">
-                    ${product.price}
+                    ${(product.unitAmount  / 100).toFixed(2)}
                 </Typography>
             </CardContent>
             <CardActions>

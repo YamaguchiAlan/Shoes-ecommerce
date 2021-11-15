@@ -2,14 +2,21 @@ import {Document, Schema, model, Model, models, Types} from 'mongoose'
 import {IImageDoc} from './images'
 
 export interface IProductDoc extends Document{
+    productId: string,
     image?: Types.ObjectId | IImageDoc,
     name: string,
-    price: number,
-    discount?: number,
+    description: string,
+    priceId: string,
+    unitAmount: number,
+    currency: string,
     category: string
 }
 
 const ProductSchema: Schema = new Schema({
+    productId: {
+        type: String,
+        required: true
+    },
     image: {
         type: Schema.Types.ObjectId,
         ref: "Images",
@@ -19,12 +26,21 @@ const ProductSchema: Schema = new Schema({
         type: String,
         required: true
     },
-    price: {
+    description: {
+        type: String,
+        required: true
+    },
+    priceId: {
+        type: String,
+        required: true
+    },
+    unitAmount: {
         type: Number,
         required: true
     },
-    discount: {
-        type: Number
+    currency: {
+        type: String,
+        required: true
     },
     category: {
         type: String,

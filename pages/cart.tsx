@@ -1,11 +1,14 @@
 import React, {useContext} from "react"
-import {getCartProducts} from "../endpoints/endpoints"
-import { Typography, Paper, Card, CardMedia, CardContent, Button } from "@material-ui/core"
+import {getCartProducts, CartResponse} from "../endpoints/endpoints"
+import { Typography, Paper, Card, CardMedia, CardContent, Button, IconButton } from "@material-ui/core"
 import { makeStyles } from "@material-ui/styles"
+import {Remove, Add} from '@material-ui/icons'
 import Layout from "../components/layout"
 import { CartContext } from "../state/context"
 import { useQuery } from "react-query"
-import { removeFromCart } from "../state/reducer"
+import { removeFromCart, increaseQuantity, decreaseQuantity } from "../state/reducer"
+import getStripe from '../utils/get-stripe'
+import axios from 'axios'
 
 const useStyles = makeStyles({
     root: {
@@ -56,6 +59,24 @@ const Cart: React.FC = () => {
         </div>
     }
 
+    const checkout = async (prices: CartResponse[]) => {
+        const items = prices.map(e => ({
+            price: e.priceId,
+            quantity: e.quantity
+        }))
+
+        const checkoutSession = await axios.post("/api/checkout", {items: items})
+
+        const stripe = await getStripe()
+        const result = await stripe.redirectToCheckout({
+            sessionId: checkoutSession.data.id
+        })
+
+        if(result.error){
+            console.log(result.error.message)
+        }
+    }
+
     return(
         <Layout noFooter>
             <div>
@@ -67,19 +88,37 @@ const Cart: React.FC = () => {
                         data.map(product => (
                             <Card className={classes.card}>
                                 <CardMedia
-                                    image={product.image.file}
+                                    image={`http://localhost:3000/api/product/image/${product.image}`}
                                     className={classes.image}
                                 />
                                 <CardContent className={classes.cardContent}>
-                                    <Typography variant="h6" className={classes.name}>
-                                        {product.name}
-                                    </Typography>
+                                    <div className={classes.summary}>
+                                        <Typography variant="h6" className={classes.name}>
+                                            {product.name}
+                                        </Typography>
+                                        <div className="flex row">
+                                            <IconButton
+                                                aria-label="subtract"
+                                                onClick={() => dispatch(decreaseQuantity(product._id))}
+                                                disabled={product.quantity <= 1}
+                                            >
+                                                <Remove/>
+                                            </IconButton>
+                                            <Typography variant="body1" className={classes.name}>
+                                                {product.quantity}
+                                            </Typography>
+                                            <IconButton aria-label="add" onClick={() => dispatch(increaseQuantity(product._id))}>
+                                                <Add/>
+                                            </IconButton>
+                                        </div>
+
+                                    </div>
                                     <div className={classes.summary}>
                                         <Button variant="outlined" size="small" onClick={() => dispatch(removeFromCart(product._id))}>
                                             Remove
                                         </Button>
                                         <Typography variant="subtitle1" color="textSecondary">
-                                            ${product.price}
+                                            ${((product.unitAmount  / 100) * product.quantity).toFixed(2) }
                                         </Typography>
                                     </div>
                                 </CardContent>
@@ -97,7 +136,7 @@ const Cart: React.FC = () => {
                             SUBTOTAL
                         </Typography>
                         <Typography variant="subtitle1">
-                            ${data.map(e => e.price).reduce((a, b) => a + b, 0)}
+                            ${(data.map(e => e.unitAmount * e.quantity).reduce((a, b) => a + b, 0) / 100).toFixed(2)}
                         </Typography>
                     </div>
                     <div className={classes.summary}>
@@ -109,7 +148,7 @@ const Cart: React.FC = () => {
                         </Typography>
                     </div>
                     <hr/>
-                    <Button variant="contained" color="secondary" className={classes.button} size="large">
+                    <Button variant="contained" color="secondary" className={classes.button} size="large" onClick={() => checkout(data)}>
                         Checkout
                     </Button>
                 </div>

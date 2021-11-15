@@ -14,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: ApiResponse<IPro
             await dbConnect()
             const {id}: idQuery = req.query
 
-            const product: IProductDoc = await Products.findById(id).populate('image')
+            const product: IProductDoc = await Products.findById(id)
 
             res.status(201).json(product)
         } catch(err){

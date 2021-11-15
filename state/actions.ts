@@ -1,7 +1,9 @@
 export enum ActionType {
     AddToCart,
     RemoveFromCart,
-    ResetCart
+    ResetCart,
+    IncreaseQuantity,
+    DecreaseQuantity
 }
 
 export interface IAddToCart {
@@ -18,4 +20,14 @@ export interface IResetCart {
     type: ActionType.ResetCart
 }
 
-export type CartActions = IAddToCart | IRemoveFromCart | IResetCart
+export interface IIncreaseQuantity {
+    type: ActionType.IncreaseQuantity,
+    productId: string
+}
+
+export interface IDecreaseQuantity {
+    type: ActionType.DecreaseQuantity,
+    productId: string
+}
+
+export type CartActions = IAddToCart | IRemoveFromCart | IResetCart | IIncreaseQuantity | IDecreaseQuantity

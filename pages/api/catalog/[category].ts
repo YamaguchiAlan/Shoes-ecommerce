@@ -3,6 +3,7 @@ import dbConnect from '../../../utils/dbConnect'
 import Products, {IProductDoc} from '../../../models/products'
 import { CategoryQuery } from '../../../types'
 import {ApiResponse} from '../../../endpoints/endpoints'
+import Stripe from 'stripe'
 
 interface ICategoryQuery {
   category?: CategoryQuery
@@ -15,13 +16,9 @@ export default async function handler(req: NextApiRequest, res: ApiResponse<IPro
 
       const { category }: ICategoryQuery  = req.query
 
-      Products.find({category: category}).populate('image').exec((err: Error, products: IProductDoc[]) => {
-        if(err){
-          res.status(400).json({error: "Something went wrong"})
-        } else{
-          res.status(200).send(products)
-        }
-      })
+      const products: IProductDoc[] = await Products.find({category: category})
+
+      res.status(200).send(products)
     } catch(err){
       res.status(400).json({error: "Something went wrong"})
     }

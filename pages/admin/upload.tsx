@@ -1,9 +1,9 @@
 import { useState, useRef } from 'react'
 import Layout from '../../components/layout'
 import { FormControl, TextField, Button, makeStyles,
-        FormLabel, RadioGroup, Radio, FormControlLabel, Checkbox } from '@material-ui/core'
+        FormLabel, RadioGroup, Radio, FormControlLabel, InputAdornment } from '@material-ui/core'
 import UploadIcon from '@material-ui/icons/CloudUpload'
-import {FormEventHandler, InputChangeEventHandler, IProduct, IImage} from '../../types'
+import {FormEventHandler, IProduct, IImage} from '../../types'
 import * as api from '../../endpoints/endpoints'
 import { useMutation } from 'react-query'
 
@@ -27,7 +27,6 @@ const UploadItem: React.FC = () => {
     const {mutateAsync, isLoading, isError, error} = useMutation<api.ISuccessResponse, api.Error, IProduct>(api.uploadProduct)
 
     const [product, setProduct] = useState<IProduct | null>(null)
-    const [discountActive, setDiscountActive] = useState<boolean>(false)
     const imageInputRef = useRef<HTMLInputElement | null>(null)
 
     const formChange = (event: FormEventHandler) => {
@@ -41,6 +40,7 @@ const UploadItem: React.FC = () => {
                 const myReader: FileReader = new FileReader();
 
                 myReader.onloadend = (e) => {
+
                     const imageObject: IImage =  {
                         file: myReader.result.toString(),
                         name: file.name,
@@ -61,23 +61,10 @@ const UploadItem: React.FC = () => {
         } else{
             const newValue: IProduct = {
                 ...product,
-                [name]: type === 'number' ? parseFloat(value) : value
+                [name]: type === 'number' ? parseFloat(value).toFixed(2) : value
             }
             setProduct(newValue)
         }
-    }
-
-    const discountChange = (event: InputChangeEventHandler) => {
-        const {checked} = event.target
-
-        let newValue: IProduct = {...product};
-
-        if(!checked){
-            delete newValue.discount
-            setProduct(newValue)
-        }
-
-        setDiscountActive(checked)
     }
 
     const submitForm = async (e: FormEventHandler) => {
@@ -102,7 +89,7 @@ const UploadItem: React.FC = () => {
                     </RadioGroup>
 
                     <div>
-                        <input type="file" accept="image/*" className={classes.input} ref={imageInputRef} required/>
+                        <input type="file" accept="image/*" name="image" className={classes.input} ref={imageInputRef} required/>
                         <div className={classes.backImg}>
                             <img src="/img/default-placeholder.png" alt="default" id="preview-image" className={classes.img}/>
                         </div>
@@ -126,45 +113,27 @@ const UploadItem: React.FC = () => {
                     />
 
                     <TextField
+                        label="Description"
+                        name="description"
+                        placeholder="Short Description"
+                        fullWidth
+                        variant="filled"
+                        required
+                    />
+
+                    <TextField
                         label="Price"
-                        name="price"
-                        placeholder="Product Price"
+                        name="unitAmount"
                         type="number"
                         variant="filled"
+                        InputProps={{
+                            startAdornment: <InputAdornment position="start">$</InputAdornment>,
+                          }}
+                        value={product?.unitAmount}
                         required
                     />
                     <button type="submit" id="submit-button" className={classes.input}></button>
                 </form>
-                    <div>
-                        <FormControlLabel
-                            control={<Checkbox />}
-                            label="Discount"
-                            name="active"
-                            disabled={!product?.price}
-                            onChange={discountChange}
-                        />
-                    <form onChange={formChange}>
-                        <TextField
-                            label="Discount"
-                            type="number"
-                            variant="filled"
-                            name="discount"
-                            value={product?.discount ? product.discount : ''}
-                            disabled={!discountActive}
-                        />
-                    </form>
-                        <TextField
-                            label="Final Price"
-                            type="number"
-                            name="finalPrice"
-                            value={product?.discount ? (product.price * product.discount) / 100 : ''}
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                            variant="filled"
-                            disabled={!discountActive}
-                        />
-                    </div>
 
                     <Button
                         variant="contained"
